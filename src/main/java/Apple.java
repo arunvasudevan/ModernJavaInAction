@@ -5,7 +5,6 @@ public class Apple implements Fruit{
     }
 
     public Apple(){
-
     }
 
     public Apple(Integer integer) {

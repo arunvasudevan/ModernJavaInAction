@@ -2,6 +2,8 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
+import static java.util.Comparator.comparing;
+
 public class AppleSorter {
     enum COLOR{
             GREEN,
@@ -13,7 +15,7 @@ public class AppleSorter {
 
         list.add(0, new Apple(COLOR.GREEN.toString(),150));
         list.add(1, new Apple(COLOR.GREEN.toString(),100));
-        list.add(2, new Apple(COLOR.RED.toString(),180));
+        list.add(2, new Apple(COLOR.RED.toString(),150));
 
         list.sort(new Comparator<Apple>() {
             @Override
@@ -27,7 +29,8 @@ public class AppleSorter {
     }
 
     public void methodReference(List<Apple> list){
-        list.sort(Comparator.comparing(Apple::getWeight));
+        // Static Comparator Method that takes a function.
+        list.sort(comparing(Apple::getWeight).reversed().thenComparing(Apple::getColor));
 
         for(Apple apple: list){
             System.out.println("Color:"+apple.getColor()+", Weight:"+apple.getWeight());
