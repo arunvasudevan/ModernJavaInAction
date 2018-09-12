@@ -23,6 +23,8 @@ public class LowCalorieDish {
         lowCalorieDish.skipStreams(menu);
         lowCalorieDish.java7LowCalorieDish(menu);
         lowCalorieDish.java8LowCalorieDish(menu);
+        lowCalorieDish.isVegetarianFriendly(menu);
+        lowCalorieDish.findAndMatch(menu);
     }
 
     public void java7LowCalorieDish(List<Dish> menu){
@@ -44,19 +46,21 @@ public class LowCalorieDish {
         System.out.println("Java 7 Approach...."+lowCaloricDishes);
 
 
-        List<String> names =
-            menu.stream()
-                .filter(dish -> {
-                    System.out.println("filtering:" + dish.getName());
-                    return dish.getCalories() > 300;
-                })
-                .map(dish -> {
-                    System.out.println("mapping:" + dish.getName());
-                    return dish.getName();
-                })
-                .limit(3)
-                .collect(toList());
-        System.out.println(names);
+//        System.out.println("Understanding the flow....");
+//
+//        List<String> names =
+//            menu.stream()
+//                .filter(dish -> {
+//                    System.out.println("filtering:" + dish.getName());
+//                    return dish.getCalories() > 300;
+//                })
+//                .map(dish -> {
+//                    System.out.println("mapping:" + dish.getName());
+//                    return dish.getName();
+//                })
+//                .limit(3)
+//                .collect(toList());
+//        System.out.println(names);
     }
 
     // Streams API Implementation
@@ -68,6 +72,7 @@ public class LowCalorieDish {
                                         .collect(toList());
 
         System.out.println("Java 8 Approach...."+lowCalorieDishes);
+
     }
 
     public void skipStreams(List<Dish> menu){
@@ -78,5 +83,27 @@ public class LowCalorieDish {
             .map(Dish::getName)
             .limit(2)
             .forEach(System.out::println);
+    }
+
+    public void isVegetarianFriendly(List<Dish> menu){
+        if(menu.stream()
+            .anyMatch(Dish::isVegetarian)){
+            System.out.println("Menu is Vegetarian Friendly!!!!");
+        }
+
+        menu.stream()
+            .filter(Dish::isVegetarian)
+            .findFirst()
+            .ifPresent(dish -> System.out.println("A Veg dish from the menu:"+dish.getName()));
+    }
+
+    public void findAndMatch(List<Dish> menu){
+        if(menu.stream().allMatch(d-> d.getCalories()<1000)){
+            System.out.println("It's a Healthy menu");
+        }
+
+        if(menu.stream().noneMatch(d-> d.getCalories() >1000)) {
+            System.out.println("Believe me it is a healthy menu...");
+        }
     }
 }
