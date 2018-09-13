@@ -91,6 +91,10 @@ public class LowCalorieDish {
             System.out.println("Menu is Vegetarian Friendly!!!!");
         }
 
+        System.out.println("Count of dishes (using map and reduce): "+menu.parallelStream()
+            .map(d -> 1)
+            .reduce(0, Integer::sum));
+
         menu.stream()
             .filter(Dish::isVegetarian)
             .findFirst()
