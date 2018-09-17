@@ -3,6 +3,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toList;
 
@@ -25,6 +27,7 @@ public class LowCalorieDish {
         lowCalorieDish.java8LowCalorieDish(menu);
         lowCalorieDish.isVegetarianFriendly(menu);
         lowCalorieDish.findAndMatch(menu);
+        lowCalorieDish.maxCalories(menu);
     }
 
     public void java7LowCalorieDish(List<Dish> menu){
@@ -110,4 +113,19 @@ public class LowCalorieDish {
             System.out.println("Believe me it is a healthy menu...");
         }
     }
+
+    public void maxCalories(List<Dish> menu){
+        int maxCalories=menu.stream()
+            .mapToInt(Dish::getCalories)
+            .max()
+            .orElse(1);
+
+        System.out.println("Range(Exclusive):"+IntStream.range(1, 100).count());
+
+        System.out.println("Range Closed(Inclusive):"+IntStream.rangeClosed(1,100).count());
+
+        System.out.println("Max Calories:"+maxCalories);
+    }
+
+
 }
