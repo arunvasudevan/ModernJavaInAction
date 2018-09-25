@@ -3,9 +3,12 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
+import static java.util.stream.Collectors.averagingInt;
+import static java.util.stream.Collectors.counting;
+import static java.util.stream.Collectors.maxBy;
 import static java.util.stream.Collectors.toList;
 
 public class LowCalorieDish {
@@ -28,6 +31,7 @@ public class LowCalorieDish {
         lowCalorieDish.isVegetarianFriendly(menu);
         lowCalorieDish.findAndMatch(menu);
         lowCalorieDish.maxCalories(menu);
+        lowCalorieDish.exploreCollectors(menu);
     }
 
     public void java7LowCalorieDish(List<Dish> menu){
@@ -127,5 +131,19 @@ public class LowCalorieDish {
         System.out.println("Max Calories:"+maxCalories);
     }
 
+
+    public void exploreCollectors(List<Dish> menu){
+        Long totalMenuItems=menu.stream().collect(counting());
+
+        System.out.println("Total Menu Items:"+totalMenuItems);
+
+        Comparator<Dish> comparator= Comparator.comparingInt(Dish::getCalories);
+        Optional<Dish> collect = menu.stream().collect(maxBy(comparator));
+        System.out.println("Max Calorie Dish:"+collect.get().getName() + "," + collect.get().getCalories()+ "," + collect.get().getType());
+
+        Double averageCalories=menu.stream().collect(averagingInt(Dish::getCalories));
+
+        System.out.println("Average Calories:"+averageCalories);
+    }
 
 }
