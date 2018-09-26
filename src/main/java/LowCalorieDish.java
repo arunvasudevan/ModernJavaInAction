@@ -2,6 +2,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.IntSummaryStatistics;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.IntStream;
@@ -9,6 +10,8 @@ import java.util.stream.IntStream;
 import static java.util.stream.Collectors.averagingInt;
 import static java.util.stream.Collectors.counting;
 import static java.util.stream.Collectors.maxBy;
+import static java.util.stream.Collectors.summarizingInt;
+import static java.util.stream.Collectors.summingInt;
 import static java.util.stream.Collectors.toList;
 
 public class LowCalorieDish {
@@ -141,9 +144,16 @@ public class LowCalorieDish {
         Optional<Dish> collect = menu.stream().collect(maxBy(comparator));
         System.out.println("Max Calorie Dish:"+collect.get().getName() + "," + collect.get().getCalories()+ "," + collect.get().getType());
 
+        Integer sumOfCalories = menu.stream().collect(summingInt(Dish::getCalories));
+
+        System.out.println("Sum of Calories:"+sumOfCalories);
         Double averageCalories=menu.stream().collect(averagingInt(Dish::getCalories));
 
         System.out.println("Average Calories:"+averageCalories);
+
+        IntSummaryStatistics intSummaryStatistics = menu.stream().collect(summarizingInt(Dish::getCalories));
+
+        System.out.println("Summary Statistics:"+intSummaryStatistics.toString());
     }
 
 }
