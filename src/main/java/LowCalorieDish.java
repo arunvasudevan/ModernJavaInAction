@@ -2,21 +2,30 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.IntSummaryStatistics;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.averagingInt;
 import static java.util.stream.Collectors.counting;
+import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.joining;
+import static java.util.stream.Collectors.mapping;
 import static java.util.stream.Collectors.maxBy;
 import static java.util.stream.Collectors.summarizingInt;
 import static java.util.stream.Collectors.summingInt;
 import static java.util.stream.Collectors.toList;
 
 public class LowCalorieDish {
+    public enum CaloricLevel { DIET, NORMAL, FAT };
+
     public static void main(String[] args){
-        List<Dish> menu = Arrays.asList(
+        List<Dish> menu = asList(
             new Dish("pork", false, 800, Dish.Type.MEAT),
             new Dish("beef", false, 700, Dish.Type.MEAT),
             new Dish("chicken", false, 400, Dish.Type.MEAT),
@@ -154,6 +163,51 @@ public class LowCalorieDish {
         IntSummaryStatistics intSummaryStatistics = menu.stream().collect(summarizingInt(Dish::getCalories));
 
         System.out.println("Summary Statistics:"+intSummaryStatistics.toString());
+
+        String shortMenu= menu.stream().map(Dish::getName).collect(joining(","));
+
+        System.out.println("Name of all dishes:"+shortMenu);
+
+        Map<Dish.Type, List<Dish>> typeListMap = menu.stream().collect(groupingBy(Dish::getType));
+
+        System.out.println("Type List Map:"+typeListMap);
+
+        Map<Dish.Type, List<String>> dishNamesByType =
+            menu.stream()
+                .collect(groupingBy(Dish::getType,
+                    mapping(Dish::getName, toList())));
+
+        System.out.println("Dish names by type (names mapped to string):"+dishNamesByType);
+
+        Map<String, List<String>> dishTags = new HashMap<>();
+        dishTags.put("pork", asList("greasy", "salty"));
+        dishTags.put("beef", asList("salty", "roasted"));
+        dishTags.put("chicken", asList("fried", "crisp"));
+        dishTags.put("french fries", asList("greasy", "fried"));
+        dishTags.put("rice", asList("light", "natural"));
+        dishTags.put("season fruit", asList("fresh", "natural"));
+        dishTags.put("pizza", asList("tasty", "salty"));
+        dishTags.put("prawns", asList("tasty", "roasted"));
+        dishTags.put("salmon", asList("delicious", "fresh"));
+
+        menu.stream()
+            .collect(groupingBy(Dish::getType));
+
+        Map<Dish.Type, Map<CaloricLevel, List<Dish>>> collect1 = menu.stream()
+            .collect(groupingBy(Dish::getType,
+                groupingBy(dish -> {
+                    if (dish.getCalories() <= 400) return CaloricLevel.DIET;
+                    else if (dish.getCalories() <= 700) return CaloricLevel.NORMAL;
+                    else return CaloricLevel.FAT;
+                })));
+
+        System.out.println("Group of Group:");
+        for (Dish.Type type : collect1.keySet()
+            ) {
+            Map<CaloricLevel, List<Dish>> caloricLevelListMap = collect1.get(type);
+            System.out.println(type + "=" + caloricLevelListMap + ",");
+        }
+
     }
 
 }
