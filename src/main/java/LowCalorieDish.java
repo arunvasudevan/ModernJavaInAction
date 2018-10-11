@@ -2,6 +2,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.IntSummaryStatistics;
 import java.util.List;
 import java.util.Map;
@@ -19,6 +20,7 @@ import static java.util.stream.Collectors.mapping;
 import static java.util.stream.Collectors.maxBy;
 import static java.util.stream.Collectors.summarizingInt;
 import static java.util.stream.Collectors.summingInt;
+import static java.util.stream.Collectors.toCollection;
 import static java.util.stream.Collectors.toList;
 
 public class LowCalorieDish {
@@ -227,6 +229,26 @@ public class LowCalorieDish {
                     Optional::get)));
 
         System.out.println("Max Calorie dish by Type:"+collectingAndTransforming);
+
+
+        Map<Dish.Type, Integer> integerMap = menu.stream()
+            .collect(groupingBy(Dish::getType,
+                summingInt(Dish::getCalories)));
+
+        System.out.println("Sum of Calories by Type:"+integerMap);
+
+
+        Map<Dish.Type, HashSet<CaloricLevel>> mapCaloricLevel = menu.stream()
+            .collect(groupingBy(Dish::getType,
+                mapping(
+                    dish -> {
+                        if (dish.getCalories() <= 400) return CaloricLevel.DIET;
+                        else if (dish.getCalories() <= 700) return CaloricLevel.FAT;
+                        else return CaloricLevel.NORMAL;
+                    }, toCollection(HashSet::new)
+                )));
+
+        System.out.println("Caloric Levels by Type:"+mapCaloricLevel);
     }
 
 }
