@@ -1,5 +1,4 @@
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -7,11 +6,12 @@ import java.util.IntSummaryStatistics;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static java.util.Arrays.asList;
+import static java.util.Comparator.comparingInt;
 import static java.util.stream.Collectors.averagingInt;
+import static java.util.stream.Collectors.collectingAndThen;
 import static java.util.stream.Collectors.counting;
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.joining;
@@ -44,6 +44,9 @@ public class LowCalorieDish {
         lowCalorieDish.findAndMatch(menu);
         lowCalorieDish.maxCalories(menu);
         lowCalorieDish.exploreCollectors(menu);
+        lowCalorieDish.findAndMatch(menu);
+        lowCalorieDish.multiLevelGroups(menu);
+        lowCalorieDish.collectingAndTransforming(menu);
     }
 
     public void java7LowCalorieDish(List<Dish> menu){
@@ -149,7 +152,7 @@ public class LowCalorieDish {
 
         System.out.println("Total Menu Items:"+totalMenuItems);
 
-        Comparator<Dish> comparator= Comparator.comparingInt(Dish::getCalories);
+        Comparator<Dish> comparator= comparingInt(Dish::getCalories);
         Optional<Dish> collect = menu.stream().collect(maxBy(comparator));
         System.out.println("Max Calorie Dish:"+collect.get().getName() + "," + collect.get().getCalories()+ "," + collect.get().getType());
 
@@ -189,10 +192,9 @@ public class LowCalorieDish {
         dishTags.put("pizza", asList("tasty", "salty"));
         dishTags.put("prawns", asList("tasty", "roasted"));
         dishTags.put("salmon", asList("delicious", "fresh"));
+    }
 
-        menu.stream()
-            .collect(groupingBy(Dish::getType));
-
+    public void multiLevelGroups(List<Dish> menu){
         Map<Dish.Type, Map<CaloricLevel, List<Dish>>> collect1 = menu.stream()
             .collect(groupingBy(Dish::getType,
                 groupingBy(dish -> {
@@ -208,6 +210,23 @@ public class LowCalorieDish {
             System.out.println(type + "=" + caloricLevelListMap + ",");
         }
 
+        Map<Dish.Type, Long> collectByCount = menu.stream()
+            .collect(groupingBy(Dish::getType, counting()));
+
+        System.out.println("No. of Dishes by Type:"+collectByCount);
+
+
+    }
+
+    public void collectingAndTransforming(List<Dish> menu){
+
+        Map<Dish.Type, Dish> collectingAndTransforming = menu.stream()
+            .collect(groupingBy(Dish::getType,
+                collectingAndThen(
+                    maxBy(comparingInt(Dish::getCalories)),
+                    Optional::get)));
+
+        System.out.println("Max Calorie dish by Type:"+collectingAndTransforming);
     }
 
 }
