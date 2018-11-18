@@ -18,6 +18,7 @@ import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.mapping;
 import static java.util.stream.Collectors.maxBy;
+import static java.util.stream.Collectors.partitioningBy;
 import static java.util.stream.Collectors.summarizingInt;
 import static java.util.stream.Collectors.summingInt;
 import static java.util.stream.Collectors.toCollection;
@@ -49,6 +50,7 @@ public class LowCalorieDish {
         lowCalorieDish.findAndMatch(menu);
         lowCalorieDish.multiLevelGroups(menu);
         lowCalorieDish.collectingAndTransforming(menu);
+        lowCalorieDish.partitionMenu(menu);
     }
 
     public void java7LowCalorieDish(List<Dish> menu){
@@ -73,7 +75,7 @@ public class LowCalorieDish {
 //        System.out.println("Understanding the flow....");
 //
 //        List<String> names =
-//            menu.stream()
+//            dishMenu.stream()
 //                .filter(dish -> {
 //                    System.out.println("filtering:" + dish.getName());
 //                    return dish.getCalories() > 300;
@@ -122,16 +124,16 @@ public class LowCalorieDish {
         menu.stream()
             .filter(Dish::isVegetarian)
             .findFirst()
-            .ifPresent(dish -> System.out.println("A Veg dish from the menu:"+dish.getName()));
+            .ifPresent(dish -> System.out.println("A Veg dish from the dishMenu:"+dish.getName()));
     }
 
     public void findAndMatch(List<Dish> menu){
         if(menu.stream().allMatch(d-> d.getCalories()<1000)){
-            System.out.println("It's a Healthy menu");
+            System.out.println("It's a Healthy dishMenu");
         }
 
         if(menu.stream().noneMatch(d-> d.getCalories() >1000)) {
-            System.out.println("Believe me it is a healthy menu...");
+            System.out.println("Believe me it is a healthy dishMenu...");
         }
     }
 
@@ -249,6 +251,34 @@ public class LowCalorieDish {
                 )));
 
         System.out.println("Caloric Levels by Type:"+mapCaloricLevel);
+    }
+
+
+    public void partitionMenu(List<Dish> menu){
+        Map<Boolean, List<Dish>> partitionedMenu = menu.stream().collect(partitioningBy(Dish::isVegetarian));
+
+        System.out.println("Partiioned Menu"+partitionedMenu);
+
+        System.out.println("Vegetarian Dishes in the dishMenu:"+partitionedMenu.get(true));
+
+        Map<Boolean, Map<Dish.Type, List<Dish>>> partitionedMenuGroupedByType = menu.stream().collect(partitioningBy(Dish::isVegetarian,
+            groupingBy(Dish::getType)));
+
+        System.out.println("Partitioned Menu Grouped by type:"+partitionedMenuGroupedByType);
+
+
+        Map<Boolean, Long> countPartitions = menu.stream().collect(partitioningBy(Dish::isVegetarian, counting()));
+
+        System.out.println("Count of Partitions:"+countPartitions);
+
+        // Dish.getType() doesn't return a predicate
+//        System.out.println("Partition dishMenu by Veg and Type:"+dishMenu.stream().collect(partitioningBy(Dish::isVegetarian,
+//            partitioningBy(Dish::getType))));
+
+
+        System.out.println("Partition by Veg and Calories:"+menu.stream().collect(partitioningBy(Dish::isVegetarian,
+            partitioningBy(d -> d.getCalories() > 500))));
+
     }
 
 }
